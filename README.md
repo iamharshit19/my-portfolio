@@ -1,12 +1,31 @@
-# React + Vite
+🌐  Harshit Gupta – Portfolio
+      
+      This is my personal portfolio website built with React, Tailwind CSS, and Framer Motion.
+    It showcases my projects, skills, and interests in Full-Stack Development and Artificial Intelligence / Machine Learning (AI/ML).
+  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀  Features
 
-Currently, two official plugins are available:
+    Responsive Design – Works across desktop and mobile devices.
+    Hero Section – With a header background, profile photo, and tagline.
+    About Section – My background, education, and interests.
+    Skills Section – Key technologies and tools I use.
+    Projects Section – Showcases my major projects with GitHub and live links.
+    Contact Section – Easy access to email, LinkedIn, and GitHub.
+    Framer Motion Animations – Smooth UI/UX animations.
+🛠️ Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+    Frontend: React.js, Tailwind CSS, Framer Motion
+📂 Project Structure
+      
+      portfolio/
+               ├── public/          # Static files (images, favicon, etc.)
+               ├── src/
+               │   ├── App.jsx      # Main app file
+               │   ├── index.js     # Entry point
+               │   └── styles.css   # Tailwind styles
+               ├── package.json
+               ├── tailwind.config.js
+               ├── postcss.config.js
+               └── README.md
+   

@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer utilities {
+  @keyframes pulse-slow {
+    '0%, 100%' {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    '50%' {
+      opacity: 0.2;
+      transform: scale(1.05);
+    }
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .shadow-subtle {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.03), 0 2px 4px -2px rgb(0 0 0 / 0.03);
+  }
+}

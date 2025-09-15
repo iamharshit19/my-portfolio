@@ -10,7 +10,7 @@ import {
   FaArrowRight,
   FaExternalLinkAlt,
 } from "react-icons/fa";
-import { SiPython, SiReact, SiVuedotjs, SiTensorflow, SiFastapi, SiMongodb, SiNodedotjs, SiExpress } from 'react-icons/si';
+import { SiPython, SiReact, SiVuedotjs, SiTensorflow, SiFastapi, SiMongodb, SiNodedotjs, SiExpress,SiJavascript } from 'react-icons/si';
 
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
@@ -62,7 +62,7 @@ const projects = [
 const skills = {
     "Languages & Databases": [
         { name: "Python", icon: <SiPython /> },
-        { name: "JavaScript", icon: <SiReact color="#61DAFB"/> },
+        { name: "JavaScript", icon: <SiJavascript color="#61DAFB"/> },
         { name: "MongoDB", icon: <SiMongodb color="#47A248"/> },
         { name: "PostgreSQL", icon: <SiPython color="#336791"/> },
         { name: "MySQL", icon: <SiPython color="#4479A1"/> },

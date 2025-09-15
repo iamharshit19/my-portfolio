@@ -288,7 +288,7 @@ export default function Portfolio() {
                 <FaLinkedin /> LinkedIn
               </motion.a>
               <motion.a variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-                href="https://drive.google.com/file/d/1CRSuqzoIneE3-PfoQ9csAXma1PBS-haQ/view?usp=drive_link" target="_blank" rel="noreferrer"
+                href="https://drive.google.com/file/d/19xvRO3V_sSLrqLf9JksZu6QorSR55hTA/view?usp=sharing" target="_blank" rel="noreferrer"
                 className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg font-semibold shadow-md hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all duration-300 transform hover:scale-105"
               >
                 <FaFilePdf /> Resume

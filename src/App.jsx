@@ -212,7 +212,7 @@ export default function Portfolio() {
   const textGradient = "bg-clip-text text-transparent bg-gradient-to-br from-indigo-500 to-violet-500";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-inter antialiased transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-50 font-inter antialiased transition-colors duration-300">
       
       <nav className={`flex justify-between items-center px-6 md:px-12 py-4 sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm' : 'bg-transparent'}`}>
         <a href="#" className="flex items-center space-x-3">

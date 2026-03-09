@@ -1,17 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-yellowish-300 dark:bg-zinc-700 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-yellowish-400 dark:bg-zinc-600;
+  }
+}
+
 @layer utilities {
   @keyframes pulse-slow {
     '0%, 100%' {
       opacity: 0.5;
       transform: scale(1);
     }
+
     '50%' {
       opacity: 0.2;
       transform: scale(1.05);
     }
   }
+
   .animate-pulse-slow {
     animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }

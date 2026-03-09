@@ -275,7 +275,7 @@ export default function Portfolio() {
     setScrolled(latest > 50);
   });
 
-  const textGradient = "bg-clip-text text-transparent bg-gradient-to-br from-yellowish-400 to-yellowish-600 dark:from-indigo-500 dark:to-violet-500";
+  const textGradient = "bg-clip-text text-transparent bg-gradient-to-br from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400";
 
   return (
     <div className="min-h-screen bg-yellowish-50 dark:bg-black text-zinc-900 dark:text-zinc-50 font-mono antialiased transition-colors duration-300 selection:bg-yellowish-200 dark:selection:bg-indigo-900">
@@ -415,7 +415,7 @@ export default function Portfolio() {
             </div>
           </div>
         </AnimatedSection>
-<br />
+        <br />
         <AnimatedSection id="experience" className="!pt-4 !pb-0 !mb-0">
           <h2 className="text-4xl font-bold mb-12 text-center">./experience.log</h2>
           <div className="max-w-4xl mx-auto">

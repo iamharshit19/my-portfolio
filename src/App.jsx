@@ -1,21 +1,21 @@
-import React from "react";
-import { motion, useAnimation, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
-import { useInView } from "react-intersection-observer";
+import React, { useState, useEffect } from "react";
+import { WindowChrome, useWorkspace, GhostTaskbar, WorkspaceFloatingLayer } from "./components/Workspace";
+import { motion } from "framer-motion";
 import {
   FaGithub,
   FaLinkedin,
   FaFilePdf,
-  FaSun,
-  FaMoon,
   FaArrowRight,
   FaExternalLinkAlt,
+  FaTerminal
 } from "react-icons/fa";
-import { SiPython, SiReact, SiVuedotjs, SiTensorflow, SiFastapi, SiMongodb, SiNodedotjs, SiExpress, SiJavascript, SiMysql, SiPostgresql } from 'react-icons/si';
+import { SiPython, SiReact, SiVuedotjs, SiTensorflow, SiFastapi, SiMongodb, SiNodedotjs, SiExpress, SiJavascript, SiMysql, SiPostgresql, SiArchlinux } from 'react-icons/si';
 
 import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/500.css";
 import "@fontsource/jetbrains-mono/700.css";
 import "@fontsource/jetbrains-mono/800.css";
+
 const projects = [
   {
     title: "Marketing Audit & Analytics Platform",
@@ -23,7 +23,6 @@ const projects = [
     techStack: ["React", "FastAPI", "Python"],
     githubLink: "https://github.com/iamharshit19",
     liveLinks: [],
-    screenshot: "./citizen.png",
     type: "Full Stack AI App"
   },
   {
@@ -35,7 +34,6 @@ const projects = [
       { name: "Citizen Portal", url: "https://grievance-citizen-portal.vercel.app" },
       { name: "Admin Portal", url: "https://admin-grievance-redressal-system.vercel.app" },
     ],
-    screenshot: "./citizen.png",
     type: "Full Stack AI App"
   },
   {
@@ -44,7 +42,6 @@ const projects = [
     techStack: ["React", "FastAPI", "TensorFlow"],
     githubLink: "https://github.com/iamharshit19/AI-Research-Assistant",
     liveLinks: [],
-    screenshot: "./chatbot.png",
     type: "AI/ML"
   },
   {
@@ -53,7 +50,6 @@ const projects = [
     techStack: ["Python", "TensorFlow"],
     githubLink: "https://github.com/iamharshit19/Web-Scrapper-Classifier",
     liveLinks: [],
-    screenshot: "./web-ally.png",
     type: "AI/ML"
   },
   {
@@ -62,7 +58,6 @@ const projects = [
     techStack: ["Python", "TensorFlow"],
     githubLink: "https://github.com/iamharshit19/neural-net-based-chatbot",
     liveLinks: [],
-    screenshot: "./chatbot.png",
     type: "AI/ML"
   },
   {
@@ -71,7 +66,6 @@ const projects = [
     techStack: ["React", "Express.js", "Node.js", "MongoDB"],
     githubLink: "https://github.com/iamharshit19/Lead-management-system",
     liveLinks: [],
-    screenshot: "./lead-manager.png",
     type: "Full Stack Web App"
   },
 ];
@@ -79,42 +73,34 @@ const projects = [
 const skills = {
   "Languages & Databases": [
     { name: "Python", icon: <SiPython /> },
-    { name: "JavaScript", icon: <SiJavascript color="#61DAFB" /> },
-    { name: "MongoDB", icon: <SiMongodb color="#47A248" /> },
-    { name: "PostgreSQL", icon: <SiPostgresql color="#336791" /> },
-    { name: "MySQL", icon: <SiMysql color="#4479A1" /> },
+    { name: "JavaScript", icon: <SiJavascript /> },
+    { name: "MongoDB", icon: <SiMongodb /> },
+    { name: "PostgreSQL", icon: <SiPostgresql /> },
+    { name: "MySQL", icon: <SiMysql /> },
   ],
   "AI/ML": [
-    { name: "TensorFlow", icon: <SiTensorflow color="#FF6F00" /> },
-    { name: "PyTorch", icon: <SiPython color="#EE4C2C" /> },
+    { name: "TensorFlow", icon: <SiTensorflow /> },
+    { name: "PyTorch", icon: <SiPython /> },
     { name: "Machine Learning", icon: <SiPython /> },
   ],
   "Frameworks & Libraries": [
-    { name: "React", icon: <SiReact color="#61DAFB" /> },
-    { name: "VueJS", icon: <SiVuedotjs color="#4FC08D" /> },
-    { name: "FastAPI", icon: <SiFastapi color="#009688" /> },
+    { name: "React", icon: <SiReact /> },
+    { name: "VueJS", icon: <SiVuedotjs /> },
+    { name: "FastAPI", icon: <SiFastapi /> },
     { name: "Express.js", icon: <SiExpress /> },
-    { name: "Node.js", icon: <SiNodedotjs color="#339933" /> },
+    { name: "Node.js", icon: <SiNodedotjs /> },
   ],
   "Tools & Platforms": [
-    { name: "Git & Linux", icon: <FaGithub /> },
+    { name: "Arch Linux", icon: <SiArchlinux /> },
+    { name: "Git", icon: <FaGithub /> },
   ]
 };
-
-const education = [
-  {
-    institution: "Modern Institute of Technology and Research Centre",
-    degree: "B.Tech in Artificial Intelligence & Data Science",
-    duration: "2021 - 2025",
-    details: "Currently pursuing B.Tech with focus on modern ML approaches and full-stack development. Active in technical clubs and hands-on project creation."
-  },
-]
 
 const experience = [
   {
     role: "Software Engineer Intern",
     company: "Success Ladder Technologies",
-    duration: "Sept 2024 \u2013 Present",
+    duration: "Sept 2024 - Present",
     location: "Alwar, RJ",
     details: [
       "Developed a marketing audit platform integrating Meta Ads API and Google Ads API to fetch live campaign metrics, automate reporting, and analyze performance.",
@@ -124,364 +110,362 @@ const experience = [
   }
 ];
 
+const CursorBlink = () => (
+  <motion.span
+    animate={{ opacity: [1, 0] }}
+    transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+    className="inline-block w-[0.45em] h-[0.9em] bg-[var(--accent)] ml-2 -mb-1"
+  />
+);
+
+const SectionHeader = ({ num, title }) => (
+  <div className="flex items-center gap-6 mb-16">
+    <div className="mono-font text-[var(--text-muted)] text-sm">[{num}]</div>
+    <div className="h-[1px] flex-grow bg-[var(--border)]"></div>
+    <h2 className="display-font text-2xl font-medium tracking-tight text-[var(--text-primary)] pr-4">{title}</h2>
+  </div>
+);
+
 const TechPill = ({ tech }) => {
-  const icons = {
-    'python': <SiPython className="mr-1.5" />,
-    'react': <SiReact className="mr-1.5" color="#61DAFB" />,
-    'vuejs': <SiVuedotjs className="mr-1.5" color="#4FC08D" />,
-    'tensorflow': <SiTensorflow className="mr-1.5" color="#FF6F00" />,
-    'fastapi': <SiFastapi className="mr-1.5" color="#009688" />,
-    'mongodb': <SiMongodb className="mr-1.5" color="#47A248" />,
-    'express.js': <SiExpress className="mr-1.5" />,
-    'node.js': <SiNodedotjs className="mr-1.5" color="#339933" />,
-  }
-  const lowerTech = tech.toLowerCase();
   return (
-    <div className="flex items-center px-2 py-0.5 bg-yellowish-100/50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded text-[11px] font-medium transition-transform hover:scale-[1.03]">
-      {icons[lowerTech]} {tech}
+    <div className="tech-pill">
+      {tech}
     </div>
   )
 }
 
-const ProjectCard = ({ project }) => {
-  return (
-    <motion.div
-      className="group relative flex flex-col bg-white dark:bg-zinc-900 rounded-xl shadow-subtle border border-zinc-200 dark:border-zinc-800 transition-shadow duration-300 hover:shadow-lg h-full"
-      whileHover={{ y: -4 }}
-    >
-      <div className="p-5 flex flex-col flex-grow">
-        <p className="text-xs font-semibold text-indigo-500 dark:text-indigo-400 mb-1">{project.type}</p>
-        <h3 className="text-lg font-bold mb-2 text-zinc-800 dark:text-zinc-100 leading-tight">{project.title}</h3>
-        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed flex-grow mb-3">
-          {project.description}
-        </p>
-
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {project.techStack.map(tech => <TechPill key={tech} tech={tech} />)}
-        </div>
-
-        <div className="flex flex-wrap gap-x-4 gap-y-2 mt-auto pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80">
-          {project.githubLink && (
-            <a
-              href={project.githubLink}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
-              <FaGithub /> GitHub
-            </a>
-          )}
-          {project.liveLinks.map((link, index) => (
-            <a
-              key={index}
-              href={link.url}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
-              <FaExternalLinkAlt size="0.8em" /> {link.name}
-            </a>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-const AnimatedSection = ({ children, id, className = "" }) => {
-  const controls = useAnimation();
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  React.useEffect(() => {
-    if (inView) {
-      controls.start("visible");
-    }
-  }, [controls, inView]);
-
-  return (
-    <motion.section
-      id={id}
-      ref={ref}
-      variants={{
-        hidden: { opacity: 0, y: 50 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-      }}
-      initial="hidden"
-      animate={controls}
-      className={`px-6 md:px-12 py-10 md:py-16 max-w-7xl mx-auto ${className}`}
-    >
-      {children}
-    </motion.section>
-  );
-};
-
-// ── HorizontalScrollCarousel Component ───────────────────────────────────────
-const HorizontalScrollCarousel = ({ projects }) => {
-  const targetRef = React.useRef(null);
-  const { scrollYProgress } = useScroll({ target: targetRef });
-
-  // Calculate how far to scroll: (n-1 cards) * (card width + gap) as vw %
-  // For 6 cards at ~420px wide + 16px gap on a ~1440px screen
-  const cardCount = projects.length;
-  const xEnd = `-${(cardCount - 1) * 32}rem`; // approximate, works responsively
-
-  const x = useTransform(scrollYProgress, [0, 1], ["0rem", xEnd]);
-
-  return (
-    <section ref={targetRef} style={{ height: `${cardCount * 50}vh` }} className="relative pt-10 md:pt-16">
-      <div className="sticky top-0 flex flex-col justify-center h-screen overflow-hidden">
-        <h2 className="text-4xl font-bold mb-10 text-center shrink-0">$ ls projects/</h2>
-        <motion.div
-          style={{ x }}
-          className="flex gap-6 px-6 md:px-12 items-stretch will-change-transform"
-        >
-          {projects.map((project, index) => (
-            <div
-              key={index}
-              className="w-[80vw] sm:w-[320px] lg:w-[400px] shrink-0"
-            >
-              <ProjectCard project={project} />
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
 
 export default function Portfolio() {
-  const [darkMode, setDarkMode] = React.useState(false);
-  const [scrolled, setScrolled] = React.useState(false);
+  const [typedName, setTypedName] = useState("");
+  const fullName = "Harshit Gupta";
 
-  React.useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const shouldBeDark = stored ? stored === "dark" : prefersDark;
-    setDarkMode(shouldBeDark);
+  // Workspace state for each section
+  const projectItems = projects.map((p, i) => ({ id: `proj-${i}`, ...p }));
+  const projectWS = useWorkspace(projectItems);
+
+  const expItems = experience.map((e, i) => ({ id: `exp-${i}`, title: `${e.role} — ${e.company}`, ...e }));
+  const expWS = useWorkspace(expItems);
+
+  const aboutItems = [
+    { id: 'about-edu', title: '~/.config/hypr/education.conf' },
+    { id: 'about-skills', title: 'ls -la ./skills' },
+  ];
+  const aboutWS = useWorkspace(aboutItems);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    
+    if (prefersReducedMotion) {
+      setTypedName(fullName);
+      return;
+    }
+
+    let i = 0;
+    let nameInterval;
+
+    nameInterval = setInterval(() => {
+      setTypedName(fullName.substring(0, i + 1));
+      i++;
+      if (i === fullName.length) {
+        clearInterval(nameInterval);
+      }
+    }, 100);
+
+    return () => clearInterval(nameInterval);
   }, []);
 
-  React.useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
-
-  const toggleTheme = () => setDarkMode(prev => !prev);
-
-  const { scrollY } = useScroll();
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    setScrolled(latest > 50);
-  });
-
-  const textGradient = "bg-clip-text text-transparent bg-gradient-to-br from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400";
-
   return (
-    <div className="min-h-screen bg-yellowish-50 dark:bg-black text-zinc-900 dark:text-zinc-50 font-mono antialiased transition-colors duration-300 selection:bg-yellowish-200 dark:selection:bg-indigo-900">
+    <div className="min-h-screen">
+      
+      {/* Ambient glow orbs */}
+      <div className="glow-orb w-[600px] h-[600px] bg-[#C6A0F6] top-[-200px] left-[-200px]" />
+      <div className="glow-orb w-[500px] h-[500px] bg-[#8BD5CA] top-[20%] right-[-100px] opacity-10" />
 
-      <nav className={`flex justify-between items-center px-6 md:px-12 py-3 sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-yellowish-50/80 dark:bg-zinc-950/80 backdrop-blur-lg border-b border-yellowish-200 dark:border-zinc-800 shadow-sm' : 'bg-transparent'}`}>
-        <a href="#" className="flex items-center space-x-3">
-          <h1 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100">Harshit Gupta</h1>
-        </a>
-        <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-zinc-600 dark:text-zinc-300">
-          <a href="#about" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">About</a>
-          <a href="#experience" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Experience</a>
-          <a href="#projects" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Projects</a>
-          <a href="#contact" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Contact</a>
-        </div>
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          aria-label="Toggle dark mode"
-        >
-          {darkMode ? <FaSun className="w-5 h-5 text-yellow-400" /> : <FaMoon className="w-5 h-5 text-indigo-500" />}
-        </button>
-      </nav>
+      {/* Floating Waybar-Style Nav */}
+      <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+        <nav className="flex items-center gap-2 md:gap-4 pointer-events-auto">
+          {/* Logo Pill */}
+          <div className="glass-nav nav-module px-4 py-2.5 shadow-xl">
+            <a href="#" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <FaTerminal className="text-[var(--accent)]" />
+              <span className="mono-font font-bold text-sm tracking-tighter">HG<span className="text-[var(--accent)]">.</span></span>
+            </a>
+          </div>
+          
+          {/* Links Pill */}
+          <div className="glass-nav nav-module px-2 py-1 hidden md:flex shadow-xl">
+            <a href="#projects" className="px-4 py-1.5 rounded-full hover:bg-[rgba(255,255,255,0.05)] text-[var(--text-primary)] mono-font text-xs font-medium transition-colors">Projects</a>
+            <a href="#experience" className="px-4 py-1.5 rounded-full hover:bg-[rgba(255,255,255,0.05)] text-[var(--text-primary)] mono-font text-xs font-medium transition-colors">Experience</a>
+            <a href="#about" className="px-4 py-1.5 rounded-full hover:bg-[rgba(255,255,255,0.05)] text-[var(--text-primary)] mono-font text-xs font-medium transition-colors">About</a>
+          </div>
 
-      <main>
-        <section className="flex flex-col md:flex-row items-center justify-center text-center md:text-left py-24 md:py-32 px-6 max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
-            className="flex-shrink-0 mb-8 md:mb-0 md:mr-16 relative"
-          >
-            <img
-              src="myphoto.png"
-              alt="Harshit Gupta"
-              className="w-48 h-48 md:w-72 md:h-72 rounded-full border-4 border-zinc-200 dark:border-zinc-800 shadow-lg object-cover"
-            />
-            <div className="absolute inset-0 rounded-full border-4 border-indigo-500/50 blur-lg animate-pulse-slow"></div>
-          </motion.div>
+          {/* Status Pill — traffic-light colors */}
+          <div className="glass-nav nav-module px-4 py-3 shadow-xl flex items-center justify-center">
+            <div className="flex gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ED8796] shadow-[0_0_6px_rgba(237,135,150,0.7)]"></span>
+              <span className="h-2.5 w-2.5 rounded-full bg-[#EED49F] shadow-[0_0_6px_rgba(238,212,159,0.6)]"></span>
+              <span className="h-2.5 w-2.5 rounded-full bg-[#A6DA95] shadow-[0_0_6px_rgba(166,218,149,0.6)] animate-pulse"></span>
+            </div>
+          </div>
+        </nav>
+      </div>
 
-          <div className="flex-1 max-w-2xl">
-            <motion.h2
-              initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-7xl font-extrabold mb-3 leading-tight"
-            >
-              <span className={textGradient}>~whoami</span> <br /> Harshit Gupta
-            </motion.h2>
-
-            <motion.h3
-              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-xl md:text-2xl font-medium mb-6 text-zinc-600 dark:text-zinc-300"
-            >
-              AI/ML Enthusiast & Full Stack Developer
-            </motion.h3>
-
-            <motion.p
-              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-base md:text-lg mb-8 text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto md:mx-0"
-            >
-              Passionate about building impactful software with a focus on intelligent systems and modern web technologies.
-            </motion.p>
-
-            <motion.div
-              initial="hidden" animate="visible"
-              variants={{ visible: { transition: { staggerChildren: 0.1, delayChildren: 0.6 } } }}
-              className="flex flex-wrap gap-4 justify-center md:justify-start"
-            >
-              <motion.a variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-                href="https://github.com/iamharshit19" target="_blank" rel="noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 dark:bg-zinc-200 text-white dark:text-zinc-900 rounded-lg font-semibold shadow-md hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-all duration-300 transform hover:scale-105"
-              >
+      {/* Hero */}
+      <section className="relative pt-40 pb-32 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden">
+        <div className="relative z-10 grid md:grid-cols-[1fr_450px] gap-12 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 glass-panel rounded-full mb-8 mono-font text-xs border border-[rgba(255,255,255,0.1)]">
+               <span className="text-[var(--accent)]">~</span>
+               <span className="text-[var(--text-muted)]">/</span>
+               <span className="text-[var(--teal)]">portfolio</span>
+               <span className="text-[var(--text-muted)]">#</span>
+               <span className="text-[var(--text-primary)] opacity-80">./init.sh</span>
+            </div>
+            
+            <h1 className="display-font text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.05] drop-shadow-2xl">
+              {typedName}{typedName !== fullName && <CursorBlink />}{typedName === fullName && <CursorBlink />}
+            </h1>
+            
+            <div className="flex flex-wrap gap-4 mt-8">
+              <a href="https://github.com/iamharshit19" target="_blank" rel="noreferrer"
+                className="btn-primary">
                 <FaGithub /> GitHub
-              </motion.a>
-              <motion.a variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-                href="https://linkedin.com/in/iamharshit19" target="_blank" rel="noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
-              >
+              </a>
+              <a href="https://linkedin.com/in/iamharshit19" target="_blank" rel="noreferrer"
+                className="btn-outline">
                 <FaLinkedin /> LinkedIn
-              </motion.a>
-              <motion.a variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-                href="https://drive.google.com/file/d/100b0iH9QVWrI5WoKp8aZ0qQToBpFRYEF/view?usp=sharing" target="_blank" rel="noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-lg font-semibold shadow-md hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 transition-all duration-300 transform hover:scale-105"
-              >
+              </a>
+              <a href="https://drive.google.com/file/d/100b0iH9QVWrI5WoKp8aZ0qQToBpFRYEF/view?usp=sharing" target="_blank" rel="noreferrer"
+                className="btn-outline">
                 <FaFilePdf /> Resume
-              </motion.a>
-            </motion.div>
+              </a>
+            </div>
           </div>
-        </section>
 
-        <AnimatedSection id="about" className="!pb-0 !mb-0">
-          <h2 className="text-4xl font-bold mb-12 text-center">$ cat about.me</h2>
-          <div className="grid md:grid-cols-5 gap-12 items-start">
-            <div className="md:col-span-3 text-lg leading-relaxed text-zinc-700 dark:text-zinc-300">
-              <p className="mb-4">
-                Hello, I’m <span className="font-semibold text-indigo-500 dark:text-indigo-400">Harshit Gupta</span>, a B.Tech student in Artificial Intelligence and Data Science at the Modern Institute of Technology and Research Centre.
-              </p>
-              <p className="mb-4">
-                I love building modern, responsive websites and diving into the exciting world of AI. My goal is to combine my full-stack development skills with intelligent systems to create solutions that are not only functional but also smart and impactful.
-              </p>
-              <p>
-                I'm always eager to learn new technologies, solve real-world problems, and contribute to meaningful projects.
-              </p>
+          {/* hyprland.conf Easter Egg Card — draggable window */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="hidden md:block"
+          >
+            <WindowChrome title="~/.config/hypr/hyprland.conf" className="hypr-block" draggable>
+              <span className="hypr-line"><span className="hypr-comment"># ----------------------------------------------------- </span></span>
+              <span className="hypr-line"><span className="hypr-comment"># Environment Variables</span></span>
+              <span className="hypr-line"><span className="hypr-comment"># ----------------------------------------------------- </span></span>
+              <span className="hypr-line"><span className="hypr-keyword">env</span> = <span className="hypr-var">USER</span>, <span className="hypr-string">"Harshit Gupta"</span></span>
+              <span className="hypr-line"><span className="hypr-keyword">env</span> = <span className="hypr-var">ROLE</span>, <span className="hypr-string">"AI/ML & Full Stack Developer"</span></span>
+              <span className="hypr-line"><span className="hypr-keyword">env</span> = <span className="hypr-var">STATUS</span>, <span className="hypr-string">"Building intelligent systems"</span></span>
+              <span className="hypr-line"><br/></span>
+              <span className="hypr-line"><span className="hypr-comment"># ----------------------------------------------------- </span></span>
+              <span className="hypr-line"><span className="hypr-comment"># General Settings</span></span>
+              <span className="hypr-line"><span className="hypr-comment"># ----------------------------------------------------- </span></span>
+              <span className="hypr-line"><span className="hypr-section">general</span> {'{'}</span>
+              <span className="hypr-line pl-4">gaps_in <span className="hypr-assign">=</span> <span className="hypr-number">5</span></span>
+              <span className="hypr-line pl-4">gaps_out <span className="hypr-assign">=</span> <span className="hypr-number">20</span></span>
+              <span className="hypr-line pl-4">border_size <span className="hypr-assign">=</span> <span className="hypr-number">2</span></span>
+              <span className="hypr-line pl-4">col.active_border <span className="hypr-assign">=</span> <span className="hypr-string">rgba(C6A0F6ee) rgba(8BD5CAee) 45deg</span></span>
+              <span className="hypr-line pl-4">col.inactive_border <span className="hypr-assign">=</span> <span className="hypr-string">rgba(494D64aa)</span></span>
+              <span className="hypr-line pl-4">layout <span className="hypr-assign">=</span> <span className="hypr-value">dwindle</span></span>
+              <span className="hypr-line">{'}'}</span>
+            </WindowChrome>
+          </motion.div>
+        </div>
+      </section>
 
-              {/* Education Section */}
-              <div className="mt-12">
-                <h3 className="text-2xl font-bold mb-6 text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-800 pb-2">
-                  <span className="text-indigo-500">./</span>education.log
-                </h3>
-                <div className="space-y-8">
-                  {education.map((edu, idx) => (
-                    <div key={idx} className="relative pl-6 border-l-2 border-indigo-500/30">
-                      <div className="absolute w-3 h-3 bg-indigo-500 rounded-full -left-[7px] top-1.5 ring-4 ring-yellowish-50 dark:ring-black"></div>
-                      <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{edu.degree}</h4>
-                      <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">{edu.institution}</p>
-                      <p className="text-xs text-zinc-500 font-mono mt-1 mb-2">{edu.duration}</p>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed shadow-sm">
-                        {edu.details}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+      <hr className="section-divider" />
+
+      {/* Projects — workspace-driven tiling */}
+      <section id="projects" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <SectionHeader num="01" title="Selected Works" />
+
+        {/* Floating windows layer */}
+        <WorkspaceFloatingLayer
+          floating={projectWS.floating}
+          close={(id) => projectWS.close(id)}
+          renderContent={(item) => (
+            <div className="p-6 space-y-3">
+              <h3 className="display-font text-xl font-bold text-[var(--text-primary)]">{item.title}</h3>
+              <p className="text-[var(--text-muted)] text-sm leading-relaxed">{item.description}</p>
+              <div className="flex flex-wrap gap-2">{item.techStack.map(t => <TechPill key={t} tech={t} />)}</div>
+            </div>
+          )}
+          renderModal={(item) => (
+            <div className="space-y-6">
+              <div className="flex flex-wrap gap-3 items-center">
+                <span className="mono-font text-[10px] text-[var(--accent)] uppercase tracking-widest border border-[var(--border)] px-3 py-1 rounded-full">{item.type}</span>
+                {item.githubLink && <a href={item.githubLink} target="_blank" rel="noreferrer" className="mono-font text-xs text-[var(--teal)] flex items-center gap-1 hover:underline"><FaGithub /> GitHub</a>}
+                {item.liveLinks.map((l, i) => <a key={i} href={l.url} target="_blank" rel="noreferrer" className="mono-font text-xs text-[var(--indigo)] flex items-center gap-1 hover:underline"><FaExternalLinkAlt size={11}/> {l.name}</a>)}
               </div>
+              <h2 className="display-font text-3xl font-bold text-[var(--text-primary)]">{item.title}</h2>
+              <div className="h-px bg-gradient-to-r from-[var(--accent)] via-[var(--teal)] to-transparent"/>
+              <p className="text-[var(--text-muted)] leading-relaxed">{item.description}</p>
+              <div className="flex flex-wrap gap-2">{item.techStack.map(t => <TechPill key={t} tech={t} />)}</div>
             </div>
+          )}
+        />
 
-            <div className="md:col-span-2 p-6 bg-white dark:bg-zinc-900/50 shadow-subtle rounded-2xl border border-zinc-200 dark:border-zinc-800">
-              {Object.entries(skills).map(([category, skillList]) => (
-                <div key={category} className="mb-6 last:mb-0">
-                  <h3 className="text-md font-semibold text-zinc-500 dark:text-zinc-400 mb-3 border-b border-zinc-200 dark:border-zinc-800 pb-2">{category}</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {skillList.map(skill => (
-                      <span key={skill.name} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-md text-sm font-medium transition-transform hover:scale-105">
-                        {skill.icon} {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </AnimatedSection>
-        <br />
-        <AnimatedSection id="experience" className="!pt-4 !pb-0 !mb-0">
-          <h2 className="text-4xl font-bold mb-12 text-center">./experience.log</h2>
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-12">
-              {experience.map((exp, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="relative pl-8 border-l-2 border-indigo-500/30 group"
+        {/* Tiled grid — reflowes when items close */}
+        <div className="flex flex-wrap gap-5">
+          {projectWS.tiled.map((project) => {
+            return (
+              <motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                style={{ flexBasis: 'calc(50% - 10px)', flexGrow: 1, minWidth: 300, minHeight: 300 }}
+              >
+                <WindowChrome
+                  id={project.id}
+                  title={`~/projects/${project.title.toLowerCase().replace(/[^a-z0-9]+/g,'-')}`}
+                  className="h-full flex flex-col"
+                  onClose={() => projectWS.close(project.id)}
+                  onFloat={() => projectWS.float(project.id)}
                 >
-                  <div className="absolute w-4 h-4 bg-indigo-500 rounded-full -left-[9px] top-1.5 ring-4 ring-yellowish-50 dark:ring-black group-hover:scale-125 transition-transform duration-300"></div>
-                  <div className="bg-white dark:bg-zinc-900/50 p-6 rounded-2xl shadow-subtle border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition-shadow">
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
-                      <div>
-                        <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{exp.role}</h4>
-                        <p className="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mt-1">{exp.company}</p>
-                      </div>
-                      <div className="mt-2 md:mt-0 text-left md:text-right">
-                        <p className="text-sm text-zinc-500 font-mono bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded inline-block">{exp.duration}</p>
-                        <p className="text-sm text-zinc-500 mt-1">{exp.location}</p>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex justify-between items-start mb-5">
+                      <span className="mono-font text-[10px] text-[var(--accent)] uppercase tracking-widest border border-[var(--border)] px-3 py-1 rounded-full">{project.type}</span>
+                      <div className="flex gap-3 text-[var(--text-muted)]">
+                        {project.githubLink && <a href={project.githubLink} target="_blank" rel="noreferrer" className="hover:text-[var(--accent)] transition-colors"><FaGithub size={15}/></a>}
+                        {project.liveLinks.map((l,idx) => <a key={idx} href={l.url} target="_blank" rel="noreferrer" className="hover:text-[var(--teal)] transition-colors"><FaExternalLinkAlt size={13}/></a>)}
                       </div>
                     </div>
-                    <ul className="list-disc list-outside ml-5 space-y-2 text-zinc-600 dark:text-zinc-400">
-                      {exp.details.map((detail, bulletIdx) => (
-                        <li key={bulletIdx} className="leading-relaxed pl-1">{detail}</li>
+                    <h3 className="display-font font-bold text-[var(--text-primary)] mb-3 text-xl">{project.title}</h3>
+                    <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-5 flex-grow">{project.description}</p>
+                    <div className="flex flex-wrap gap-2 mt-auto">{project.techStack.map(t => <TechPill key={t} tech={t}/>)}</div>
+                  </div>
+                </WindowChrome>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Ghost taskbar */}
+        <GhostTaskbar closed={projectWS.closed.map(p => ({ id: p.id, title: `~/projects/${p.title.toLowerCase().replace(/[^a-z0-9]+/g,'-')}` }))} onRestore={projectWS.restore} />
+      </section>
+
+      <hr className="section-divider" />
+
+      {/* Experience */}
+      <section id="experience" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <SectionHeader num="02" title="Experience" />
+        <WorkspaceFloatingLayer floating={expWS.floating} close={expWS.close}
+          renderContent={(exp) => (
+            <div className="p-6 space-y-3">
+              <h3 className="display-font text-xl font-bold">{exp.role}</h3>
+              <div className="text-[var(--text-muted)]">{exp.company} • {exp.location}</div>
+            </div>
+          )}
+        />
+        <div className="grid md:grid-cols-[1fr_2.5fr] gap-12">
+          <div className="hidden md:block h-fit sticky top-32">
+            <WindowChrome id="syslog" title="system_log.txt" onClose={() => {}} onFloat={() => {}}>
+              <div className="px-4 pb-4 mono-font text-[11px] text-[var(--text-muted)] leading-relaxed space-y-2">
+                <p><span className="text-[var(--teal)]">[INFO]</span> Loading timeline...</p>
+                <p><span className="text-[var(--teal)]">[INFO]</span> 1 entry found.</p>
+                <p className="text-[var(--accent)] animate-pulse">Waiting for new nodes...</p>
+              </div>
+            </WindowChrome>
+          </div>
+          <div className="space-y-6">
+            {expWS.tiled.map((exp) => (
+              <motion.div key={exp.id} layout initial={{ opacity:0,y:20 }} animate={{ opacity:1,y:0 }} exit={{ opacity:0,scale:0.95 }} transition={{ duration:0.3 }}>
+                <WindowChrome id={exp.id} title={exp.title} onClose={() => expWS.close(exp.id)} onFloat={() => expWS.float(exp.id)}>
+                  <div className="px-6 pb-6 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--accent-glow)] blur-[60px] pointer-events-none"/>
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-baseline mb-6 border-b border-[var(--border)] pb-5 pt-2">
+                      <div>
+                        <h3 className="display-font text-2xl font-bold text-[var(--text-primary)] mb-1">{exp.role}</h3>
+                        <div className="text-[var(--text-muted)]">{exp.company} • {exp.location}</div>
+                      </div>
+                      <div className="mono-font text-sm text-[var(--accent)] mt-3 md:mt-0 bg-[var(--accent-dim)] px-4 py-1.5 rounded-full border border-[var(--accent)]">{exp.duration}</div>
+                    </div>
+                    <ul className="space-y-4">
+                      {exp.details.map((d,i) => (
+                        <li key={i} className="flex gap-3 leading-relaxed">
+                          <span className="text-[var(--accent)] mt-1">▹</span>
+                          <span className="text-sm text-[var(--text-muted)]">{d}</span>
+                        </li>
                       ))}
                     </ul>
                   </div>
-                </motion.div>
-              ))}
-            </div>
+                </WindowChrome>
+              </motion.div>
+            ))}
+            <GhostTaskbar closed={expWS.closed.map(e => ({ id: e.id, title: e.title }))} onRestore={expWS.restore}/>
           </div>
-        </AnimatedSection>
-
-        <div id="projects" className="max-w-7xl mx-auto -mt-20 md:-mt-32">
-          <HorizontalScrollCarousel projects={projects} />
         </div>
+      </section>
 
-        <AnimatedSection id="contact" className="!pt-0 md:!-mt-48 -mt-24 relative z-10">
-          <div className="max-w-xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-4">./contact.sh</h2>
-            <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-              I'm currently open to new opportunities and collaborations. Feel free to reach out!
-            </p>
-            <a
-              href="mailto:harshitgupta0901@gmail.com"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold shadow-lg hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105"
-            >
-              Say Hello <FaArrowRight />
-            </a>
+      <hr className="section-divider" />
+
+      {/* About & Skills */}
+      <section id="about" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <SectionHeader num="03" title="About & Skills" />
+        <WorkspaceFloatingLayer floating={aboutWS.floating} close={aboutWS.close} renderContent={() => null}/>
+        <div className="flex flex-wrap gap-6">
+          {aboutWS.tiled.map((item) => (
+            <motion.div key={item.id} layout initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} transition={{ duration:0.3 }}
+              style={{ flexBasis: '45%', flexGrow: 1, minWidth: 300 }}>
+              {item.id === 'about-edu' ? (
+                <WindowChrome id={item.id} title={item.title} className="hypr-block" onClose={() => aboutWS.close(item.id)} onFloat={() => aboutWS.float(item.id)}>
+                  <span className="hypr-line"><span className="hypr-comment"># Education Module</span></span>
+                  <span className="hypr-line"><span className="hypr-section">education</span> {'{'}</span>
+                  <span className="hypr-line pl-4">institution <span className="hypr-assign">=</span> <span className="hypr-string">"Modern Institute of Technology"</span></span>
+                  <span className="hypr-line pl-4">degree <span className="hypr-assign">=</span> <span className="hypr-string">"B.Tech AI & Data Science"</span></span>
+                  <span className="hypr-line pl-4">grad_year <span className="hypr-assign">=</span> <span className="hypr-number">2025</span></span>
+                  <span className="hypr-line pl-4">focus <span className="hypr-assign">=</span> <span className="hypr-string">"Modern ML & Full-Stack"</span></span>
+                  <span className="hypr-line">{'}'}</span>
+                </WindowChrome>
+              ) : (
+                <WindowChrome id={item.id} title={item.title} onClose={() => aboutWS.close(item.id)} onFloat={() => aboutWS.float(item.id)}>
+                  <div className="px-4 pb-4 space-y-6">
+                    {Object.entries(skills).map(([cat, list]) => (
+                      <div key={cat}>
+                        <div className="mono-font text-[11px] text-[var(--text-muted)] mb-3 uppercase tracking-widest border-l-2 border-[var(--accent)] pl-2">{cat}</div>
+                        <div className="flex flex-wrap gap-2">{list.map(s => <span key={s.name} className="skill-chip">{s.icon} {s.name}</span>)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </WindowChrome>
+              )}
+            </motion.div>
+          ))}
+        </div>
+        <GhostTaskbar closed={aboutWS.closed.map(i => ({ id: i.id, title: i.title }))} onRestore={aboutWS.restore}/>
+      </section>
+
+      {/* Footer / Contact */}
+      <footer className="py-32 px-6 md:px-12 max-w-7xl mx-auto text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(198,160,246,0.1)_0%,transparent_50%)] pointer-events-none" />
+        
+        <div className="relative z-10">
+          <h2 className="display-font text-5xl md:text-6xl font-bold mb-6 tracking-tight">Let's compile together.</h2>
+          <p className="text-[var(--text-muted)] text-lg mb-10 max-w-lg mx-auto font-medium">
+            Currently open for new opportunities. Whether you have a question or just want to say hi, my inbox is open.
+          </p>
+          <a href="mailto:harshitgupta0901@gmail.com"
+            className="btn-primary text-lg px-8 py-4 rounded-full">
+            Execute Contact <FaArrowRight />
+          </a>
+        </div>
+        
+        <div className="mt-32 pt-8 border-t border-[rgba(255,255,255,0.05)] flex flex-col md:flex-row justify-between items-center gap-4 text-[var(--text-muted)] mono-font text-xs">
+          <div>© {new Date().getFullYear()} Harshit Gupta. All rights reserved.</div>
+          <div className="flex items-center gap-2">
+             <SiArchlinux className="text-[var(--accent)]" />
+             <span>crafted on arch linux + hyprland</span>
           </div>
-        </AnimatedSection>
-      </main>
-
-      <footer className="text-center py-8 bg-zinc-100 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800">
-        <div className="flex justify-center gap-6 mb-4">
-          <a href="https://github.com/iamharshit19" target="_blank" rel="noreferrer" className="text-zinc-500 hover:text-indigo-500 transition-colors"><FaGithub size="1.5em" /></a>
-          <a href="https://linkedin.com/in/iamharshit19" target="_blank" rel="noreferrer" className="text-zinc-500 hover:text-indigo-500 transition-colors"><FaLinkedin size="1.5em" /></a>
+          <div className="flex gap-6">
+            <a href="https://github.com/iamharshit19" className="hover:text-[var(--text-primary)] transition-colors">GitHub</a>
+            <a href="https://linkedin.com/in/iamharshit19" className="hover:text-[var(--text-primary)] transition-colors">LinkedIn</a>
+          </div>
         </div>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Designed & Developed by Harshit Gupta © {new Date().getFullYear()}
-        </p>
       </footer>
-    </div >
+
+    </div>
   );
 }

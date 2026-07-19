@@ -235,7 +235,7 @@ export default function Portfolio() {
                 className="btn-outline">
                 <FaLinkedin /> LinkedIn
               </a>
-              <a href="https://drive.google.com/file/d/100b0iH9QVWrI5WoKp8aZ0qQToBpFRYEF/view?usp=sharing" target="_blank" rel="noreferrer"
+              <a href="https://drive.google.com/file/d/1PjeXB-U0QZDNzz0syixwH28oELrRib_6/view?usp=drive_link" target="_blank" rel="noreferrer"
                 className="btn-outline">
                 <FaFilePdf /> Resume
               </a>
